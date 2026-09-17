@@ -7,7 +7,7 @@ import { DisplayInspector } from './components/DisplayInspector';
 import { TruthTable } from './components/TruthTable';
 import { EducationalGuide } from './components/EducationalGuide';
 import { sounds } from './utils/audio';
-import { Cpu, Eye, Table as TableIcon, Sparkles } from 'lucide-react';
+import { Cpu, Eye, Table as TableIcon, Sparkles, Cloud, Check, Copy, X } from 'lucide-react';
 
 export default function App() {
   // Initial state: Start at digit 0 (where Pin 10 [G] is eliminated) to immediately showcase the feature
@@ -19,6 +19,8 @@ export default function App() {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState<'both' | 'table' | 'inspector'>('both');
+  const [showRenderModal, setShowRenderModal] = useState<boolean>(false);
+  const [copiedField, setCopiedField] = useState<string | null>(null);
 
   const playTimerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -147,10 +149,20 @@ export default function App() {
             </div>
           </div>
 
-          {/* Quick status badge */}
-          <div className="flex items-center gap-3">
+          {/* Quick status badge & Render button */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              type="button"
+              onClick={() => setShowRenderModal(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600/30 to-teal-600/30 hover:from-emerald-600/40 hover:to-teal-600/40 text-emerald-300 border border-emerald-500/40 text-xs font-semibold shadow-sm transition-all active:scale-95"
+              title="Ver configuración para publicar en Render (onrender.com)"
+            >
+              <Cloud className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Publicar en Render</span>
+            </button>
+
             <div className="flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-xl px-3 py-1.5 shadow-inner">
-              <span className="text-xs text-slate-400 font-medium">Patitas retiradas:</span>
+              <span className="text-xs text-slate-400 font-medium hidden sm:inline">Patitas retiradas:</span>
               <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30">
                 {eliminatedPins.length}
               </span>
@@ -277,6 +289,119 @@ export default function App() {
       <footer className="border-t border-slate-900 bg-slate-950/80 px-6 py-4 text-center text-xs text-slate-500">
         DOJOROBOT • Profesora: Bere • Simulador de LED de 7 Segmentos con Desconexión Física de Patitas en Protoboard
       </footer>
+
+      {/* Modal de Configuración para Render */}
+      {showRenderModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-slate-900 border border-slate-700/80 rounded-2xl max-w-lg w-full p-5 sm:p-6 shadow-2xl flex flex-col gap-4 text-slate-200">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+                  <Cloud className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-white">Configuración para Render (onrender.com)</h3>
+                  <p className="text-xs text-slate-400">Parámetros listos para crear tu Static Site gratuito</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowRenderModal(false)}
+                className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <p className="text-slate-300">
+                El proyecto ya incluye <code className="text-emerald-400 font-mono">render.yaml</code>, <code className="text-emerald-400 font-mono">.nvmrc</code> (Node 20) y <code className="text-emerald-400 font-mono">_redirects</code>. Si lo creas manualmente en Render, utiliza estos valores:
+              </p>
+
+              <div className="bg-slate-950/80 border border-slate-800 rounded-xl p-3.5 space-y-2.5 font-mono">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="text-slate-400 block text-[11px] font-sans">Tipo de Servicio:</span>
+                    <span className="text-white font-semibold">Static Site (Sitio Estático)</span>
+                  </div>
+                  <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded font-sans">100% Gratis</span>
+                </div>
+
+                <div className="border-t border-slate-800/80 pt-2 flex items-center justify-between">
+                  <div>
+                    <span className="text-slate-400 block text-[11px] font-sans">Build Command:</span>
+                    <span className="text-amber-300 font-semibold">npm run build</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard?.writeText('npm run build');
+                      setCopiedField('build');
+                      setTimeout(() => setCopiedField(null), 2000);
+                    }}
+                    className="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
+                    title="Copiar comando"
+                  >
+                    {copiedField === 'build' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+
+                <div className="border-t border-slate-800/80 pt-2 flex items-center justify-between">
+                  <div>
+                    <span className="text-slate-400 block text-[11px] font-sans">Publish Directory:</span>
+                    <span className="text-sky-300 font-semibold">dist</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard?.writeText('dist');
+                      setCopiedField('dist');
+                      setTimeout(() => setCopiedField(null), 2000);
+                    }}
+                    className="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
+                    title="Copiar directorio"
+                  >
+                    {copiedField === 'dist' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+
+                <div className="border-t border-slate-800/80 pt-2 flex items-center justify-between">
+                  <div>
+                    <span className="text-slate-400 block text-[11px] font-sans">Variable de Entorno (Recomendada):</span>
+                    <span className="text-purple-300 font-semibold">NODE_VERSION = 20.18.0</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard?.writeText('20.18.0');
+                      setCopiedField('node');
+                      setTimeout(() => setCopiedField(null), 2000);
+                    }}
+                    className="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
+                    title="Copiar versión Node"
+                  >
+                    {copiedField === 'node' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="p-3 bg-sky-950/30 border border-sky-800/40 rounded-xl text-sky-200 leading-relaxed text-[11px]">
+                💡 <strong>Consejo rápido:</strong> Si conectas tu repositorio a Render y seleccionas <strong>Blueprint</strong>, Render leerá el archivo <code className="font-mono">render.yaml</code> y aplicará todos estos ajustes en un solo clic.
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-2 border-t border-slate-800">
+              <button
+                type="button"
+                onClick={() => setShowRenderModal(false)}
+                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium text-xs transition-colors"
+              >
+                Entendido
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
