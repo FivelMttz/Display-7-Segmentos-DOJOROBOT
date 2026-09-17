@@ -1,0 +1,6 @@
+{
+  "name": "DOJOROBOT. Profesora: Bere",
+  "description": "DOJOROBOT - Simulador de display LED de 7 segmentos en protoboard con desconexión física de patitas. Profesora: Bere.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
