@@ -8,6 +8,7 @@
   },
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
+    "prebuild": "which vite >/dev/null 2>&1 || npm install",
     "build": "vite build",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",

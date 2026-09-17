@@ -330,12 +330,12 @@ export default function App() {
                 <div className="border-t border-slate-800/80 pt-2 flex items-center justify-between">
                   <div>
                     <span className="text-slate-400 block text-[11px] font-sans">Build Command:</span>
-                    <span className="text-amber-300 font-semibold">npm run build</span>
+                    <span className="text-amber-300 font-semibold">npm install &amp;&amp; npm run build</span>
                   </div>
                   <button
                     type="button"
                     onClick={() => {
-                      navigator.clipboard?.writeText('npm run build');
+                      navigator.clipboard?.writeText('npm install && npm run build');
                       setCopiedField('build');
                       setTimeout(() => setCopiedField(null), 2000);
                     }}
